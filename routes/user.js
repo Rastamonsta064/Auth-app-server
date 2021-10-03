@@ -63,4 +63,19 @@ usersRouter.route('/update').post((req, res) => {
     })
 });
 
+usersRouter.route('/password').put((req, res) => {
+    jwt.verify(req.headers['authorization'], secretKey, (err, user) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            const filter = {email: user.email};
+            const update = {secret: req.headers['secret']}
+            User.findOneAndUpdate(filter, update, {new: true})
+                .then(user => {
+                    res.json(user);
+                }).catch(err => res.status(400).json('Error: ' + err));
+        }
+    })
+})
+
 export default usersRouter;
